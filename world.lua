@@ -26,13 +26,13 @@ resourceGroups = {}
 function resourceName(id)
   text = "NotDefined"
   if id==G then
-    text = "Grass"
+    text = "Grassland"
   elseif id == F then
     text = "Forest"
   elseif id == S then
-    text = "Stone"
+    text = "Foothills"
   elseif id == W then
-    text = "Water"
+    text = "River"
   end
   return text
 end
@@ -43,14 +43,27 @@ map = {F, F, F, F, F, W, G, G, G, G, G, G, S, S,
        F, F, F, F, W, G, G, G, G, G, G, G, S, S,
        F, F, F, F, W, G, G, G, G, G, G, S, S, S,
        F, F, F, W, W, G, G, G, G, G, G, S, S, S,
-       F, F, W, W, G, G, G, G, G, S, S, S, S, S,
-       F, F, W, G, G, G, G, G, S, S, S, S, S, S,
+       F, F, F, W, G, G, G, G, G, S, S, S, S, S,
+       F, F, F, W, G, G, G, G, S, S, S, S, S, S,
        F, F, W, G, G, G, S, S, S, S, S, S, S, S,
        F, F, W, G, G, G, S, S, S, S, S, S, S, S}
 
 --Equivalent to a constructor
 function World.new()
   return setmetatable({}, { __index = World })
+end
+
+function World:getTotalProduction()
+  local F = 0
+  local M = 0
+  local W = 0
+  for i = 1,#resourceGroups do
+    local F2,M2,W2 = resourceGroups[i]:getProduction()
+    F = F + F2
+    M = M + M2
+    W = W + W2
+  end
+  return F, M, W
 end
 
 function World:load()

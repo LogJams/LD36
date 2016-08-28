@@ -16,7 +16,7 @@ end
 function Tooltip.update(dt)
   --decide if the tooltip should be shown
   Tooltip.timer = Tooltip.timer - dt
-  if math.abs(lastX - love.mouse.getX()) > 3 or math.abs(lastY - love.mouse.getY()) > 3 then
+  if math.abs(lastX - love.mouse.getX()) > 4 or math.abs(lastY - love.mouse.getY()) > 4 then
     Tooltip.timer = Tooltip.timeLimit
   end
   lastX = love.mouse.getX()

@@ -49,14 +49,29 @@ function City:update(dt)
     --eat food and produce materials
     self.nFood = self.nFood - self.pop
     self.nMil = self.nMil + self.nMen
+    if self.pop > 0 then
+      local factor = self.nFood / self.pop
+      factor = math.max(factor, 0)
+      factor = math.min(factor, 1.2)
+      self.pop = self.pop +  (self.nMen * factor) + (self.nWomen * factor) - self.nChildren
+      self.nMen = self.nMen + (self.nMen * factor)
+      self.nWomen = self.nWomen + (self.nWomen * factor)
+      self.nChildren = self.pop * factor / 2
+      self.pop = self.pop + self.nChildren
+    end
   end
+end
+
+function City:getConsumption()
+  return self.pop
 end
 
 function City:templateText()
   return CityTypeStrings[self.level] .. " of " .. self.name .. "\nPopulation: " .. self.pop ..
-          "\n    Idle Men: " .. self.nMen .. "\n    Idle Women " .. self.nWomen ..
-          "\n    Idle Children: " .. self.nChildren .. "\nProduction: " ..
-          "\n    Materials: " .. self.nMen*2
+          "\n    Local Men: " .. self.nMen .. "\n    Local Women " .. self.nWomen ..
+          "\n    Local Children: " .. self.nChildren .. "\n    Soldiers: 0" .. "\nProduction: " ..
+          "\n    Materials: " .. self.nMen*2 .. "\nConsumption: " ..
+          "\n    Food: ".. self.pop
 end
 
 function City:draw()
@@ -71,7 +86,7 @@ end
 function City:drawText()
   love.graphics.setColor(0, 0, 0)
   love.graphics.setFont(self.font)
-  local text = self.nMen .. " " .. self.nWomen .. " " .. self.nChildren .. "\n" .. self.name
+  local text = math.floor(self.nMen) .. " " .. math.floor(self.nWomen) .. " " .. math.floor(self.nChildren) .. "\n" .. self.name
   love.graphics.print(text, self.x + 5, self.y + self.height - 10) 
   love.graphics.setNewFont()
   

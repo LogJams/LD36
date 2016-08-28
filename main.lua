@@ -55,8 +55,20 @@ function love.update(dt)
   end
   --move people around on click
   mousex, mousey = love.mouse.getPosition()
-  -- THIS SHOULD PROBABLY BE REPLACED WITH A GUI
-  if leftClick then
+  hoverCity = mousex > homeCity.x and mousex < homeCity.x + homeCity.width  and
+              mousey > homeCity.y and mousey < homeCity.y + homeCity.height
+              
+  if leftClick and not UI.mouseHover() then
+    --if we aren't over the city set the selected region
+
+    if not hoverCity and leftClick then
+      UI.selectResource(world:getResourceGroup(mousex, mousey))
+    elseif leftClick then
+      UI.close()
+    end
+    
+    
+    --[[
     --if we're over some territory add any available man to it
     if homeCity.nMen > 0 then
       if world:addWorker(mousex, mousey, 0) then
@@ -67,9 +79,10 @@ function love.update(dt)
         homeCity.nChildren = homeCity.nChildren - 1
       end
     end
+    --]]
   elseif rightClick then
     --if we're over some territory add any available woman to it
-     if homeCity.nWomen > 0 then
+   --[[  if homeCity.nWomen > 0 then
       if world:addWorker(mousex, mousey, 1) then
         homeCity.nWomen = homeCity.nWomen - 1
       end
@@ -77,21 +90,24 @@ function love.update(dt)
       if world:addWorker(mousex, mousey, 2) then
         homeCity.nChildren = homeCity.nChildren - 1
       end
-    end
+    end--]]
   end
   -- update world/terrain
   world:update(dt)
   --update UI/tooltip  
-  --if the mouse is over a city then use that for the text
-  if mousex > homeCity.x and mousex < homeCity.x + homeCity.width  and
-     mousey > homeCity.y and mousey < homeCity.y + homeCity.height then
-    Tooltip.text = homeCity:templateText()
-    --else if a city was clicked set something to true
-    --else display information about the current tile
-  else
-    Tooltip.text = world:getTooltip(mousex, mousey)
+  if not UI.mouseHover() then
+    --if the mouse is over a city then use that for the text
+    if hoverCity then
+      Tooltip.text = homeCity:templateText()
+      --else if a city was clicked set something to true
+      --else display information about the current tile
+    else
+      Tooltip.text = world:getTooltip(mousex, mousey)
+    end
+      Tooltip.update(dt)
+  else 
+    Tooltip.visible = false
   end
-  Tooltip.update(dt)
   UI.update(dt)
   --set input to false
   leftClick = false
